@@ -1,0 +1,12 @@
+{
+  "name": "ts-lambda-calc",
+  "version": "1.0.0",
+  "author": "Desislav Ivanov",
+  "license": "MIT",
+  "scripts": {
+    "tsc:check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "typescript": "^4.5.3"
+  }
+}
