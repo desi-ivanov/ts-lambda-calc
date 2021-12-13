@@ -34,6 +34,16 @@ export type Reduce<M> =
       : App<Red, N>
     : M
   : never
-  
-  
-export type ReduceStar<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? M : ReduceStar<R> : never
+
+
+export type ReduceStar<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? R : ReduceStar<R> : never
+
+
+
+export type Stringify<M> =
+  M extends Var<infer X> ? X
+  : M extends Func<infer M2, infer X> 
+    ? `(ƛ${X}.${Stringify<M2>})`
+  : M extends App<infer M1, infer N>
+    ? `(${Stringify<M1>} ${Stringify<N>})`
+  : never
