@@ -25,12 +25,15 @@ export type Subst<M, N, Y> =
   
 export type Reduce<M> =
   M extends Var<infer X> ? M
-  : M extends Func<infer M1, infer X> ? Func<Reduce<M1>, X>
+  : M extends Func<infer M1, infer X> 
+      ? Func<Reduce<M1>, X>
   : M extends App<infer M1, infer N> 
-  ? M1 extends Func<infer M2, infer Y> 
-  ? Subst<M2, N, Y>
-  : M
-  : never;
+    ? Reduce<M1> extends infer Red
+      ? Red extends Func<infer F, infer Y>
+        ? Reduce<Subst<F, N, Y>>
+      : App<Red, N>
+    : M
+  : never
   
   
 export type ReduceStar<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? M : ReduceStar<R> : never
