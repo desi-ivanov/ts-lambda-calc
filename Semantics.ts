@@ -17,7 +17,7 @@ export type Subst<M, N, Y> =
     : X extends FV<N> ? 
       GenerateUnused<"x", FV<M1> | FV<N>> extends infer Z ? 
         Z extends string ?
-          Func<Subst<Subst<M1, Z, X>, N, Y>, Z> : never
+          Func<Subst<Subst<M1, Var<Z>, X>, N, Y>, Z> : never
           : never
       : Func<Subst<M1, N, Y>, X>
   : never;
@@ -36,7 +36,7 @@ export type Reduce<M> =
   : never
 
 
-export type ReduceStar<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? R : ReduceStar<R> : never
+export type Eval<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? R : Eval<R> : never
 
 
 
@@ -46,4 +46,12 @@ export type Stringify<M> =
     ? `(ƛ${X}.${Stringify<M2>})`
   : M extends App<infer M1, infer N>
     ? `(${Stringify<M1>} ${Stringify<N>})`
+  : never
+
+export type StringifyTabs<M, Tabs extends string = ""> =
+  M extends Var<infer X> ? `\n${Tabs}${X}`
+  : M extends Func<infer M2, infer X> 
+    ? `\n${Tabs}(ƛ${X}.${StringifyTabs<M2, `${Tabs} `>})`
+  : M extends App<infer M1, infer N>
+    ? `\n${Tabs}(${StringifyTabs<M1, `${Tabs} `>} ${StringifyTabs<N, `${Tabs} `>})`
   : never
