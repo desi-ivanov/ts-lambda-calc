@@ -43,7 +43,7 @@ export type Eval<M> = Reduce<M> extends infer R ? Equal<M, R> extends true ? R :
 export type Stringify<M> =
   M extends Var<infer X> ? X
   : M extends Func<infer M2, infer X> 
-    ? `(ƛ${X}.${Stringify<M2>})`
+    ? `(λ${X}.${Stringify<M2>})`
   : M extends App<infer M1, infer N>
     ? `(${Stringify<M1>} ${Stringify<N>})`
   : never
@@ -51,7 +51,7 @@ export type Stringify<M> =
 export type StringifyTabs<M, Tabs extends string = ""> =
   M extends Var<infer X> ? `\n${Tabs}${X}`
   : M extends Func<infer M2, infer X> 
-    ? `\n${Tabs}(ƛ${X}.${StringifyTabs<M2, `${Tabs} `>})`
+    ? `\n${Tabs}(λ${X}.${StringifyTabs<M2, `${Tabs} `>})`
   : M extends App<infer M1, infer N>
     ? `\n${Tabs}(${StringifyTabs<M1, `${Tabs} `>} ${StringifyTabs<N, `${Tabs} `>})`
   : never
