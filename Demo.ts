@@ -1,28 +1,25 @@
-import { App, Func, Var } from "./Lang"
-import { Parse, ParseBodyVar } from "./Parser"
-import { FV, ReduceStar, Subst } from "./Semantics"
+import { Parse, } from "./Parser"
+import { Eval, Stringify, } from "./Semantics"
 
+type ZERO = "(λf.(λx.x))"
+type SUCC = "(λa.(λf.(λx.(a f) (f x))))"
+type ADD = `(λa.(λb.(b ${SUCC} a)))`
 
+type zero = Parse<ZERO>
+type succ = Parse<SUCC>
+type one = Parse<`${SUCC} ${ZERO}`>
+type two = Parse<`${SUCC} (${SUCC} ${ZERO})`>
 
-type a = Subst<Func<Var<"x">, "y">, Var<"y">, "z"> 
+type rawOne = Stringify<one> // ((λa.(λf.(λx.((a f) (f x))))) (λf.(λx.x)))
+type rawTwo = Stringify<two> // ((λa.(λf.(λx.((a f) (f x))))) ((λa.(λf.(λx.((a f) (f x))))) (λf.(λx.x))))
 
+type evalZero = Stringify<Eval<zero>>  // (λf.(λx.x))
+type evalOne = Stringify<Eval<one>>  // (λf.(λx.(f x)))
+type evalTwo = Stringify<Eval<two>>  // (λf.(λx.(f (f x))))
 
-type t1 = FV<Var<"x">>
-type t2 = FV<Func<Var<"x">, "y">>
-type t3 = FV<Func<Var<"y">, "y">> //never
-type t4 = FV<App<Var<"x">, Var<"y">>>
-
-
-type zzz = ReduceStar<App<Func<Var<"x">, "x">, Var<"y">>>
-
-type a1 = ParseBodyVar<"aasd asdf">
-
-
-
-type lam = Parse<"(ƛa.(ƛb.b) ((ƛb.b) 2)) 42">
-
-
-type eval = ReduceStar<lam>
-
-
-type fix = Parse<"(ƛf.(ƛx.(f (x x))) (ƛx.(f (x x))))">
+// 3 + 2 = 5
+type parsed = Parse<`${ADD} (${SUCC} (${SUCC} (${SUCC} ${ZERO}))) (${SUCC} (${SUCC} ${ZERO}))`>
+type rawParsed = Stringify<parsed> // (((λa.(λb.((b (λa.(λf.(λx.((a f) (f x)))))) a))) ((λa.(λf.(λx.((a f) (f x))))) ((λa.(λf.(λx.((a f) (f x))))) ((λa.(λf.(λx.((a f) (f x))))) (λf.(λx.x)))))) ((λa.(λf.(λx.((a f) (f x))))) ((λa.(λf.(λx.((a f) (f x))))) (λf.(λx.x)))))
+type ThreePlusTwo = Stringify<Eval<parsed>>
+ // (λf.(λxx.(f (f (f (f (f xx)))))))
+  
