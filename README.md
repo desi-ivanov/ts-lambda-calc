@@ -2,7 +2,7 @@
 Lambda calculus at type-level with TypeScript.
 
 The project includes:
-- a parser which transforms raw strings representing lambda expressions into a ASTs
+- a parser which transforms raw strings representing lambda expressions into an ASTs
 - an evaluator which reduces ASTs
 - a stringifyier which transforms an AST back into a string
 
