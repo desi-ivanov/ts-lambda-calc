@@ -1,5 +1,6 @@
 # ts-lambda-calc
 Lambda calculus at type-level with TypeScript.
+
 The project includes:
 - a parser which transforms raw strings representing lambda expressions into a ASTs
 - an evaluator which reduces ASTs
