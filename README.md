@@ -61,7 +61,7 @@ type evaluated = Stringify<Eval<parsed>> // (λf.(λxx.(f (f (f (f (f xx)))))))
 ```
 
 ## Factorial and limitations
-There is an implementation of factorial in [Fact.ts](./Fact.ts), but unfortunately the compiler has hardcoded type-instantiation depth limits and fails with *Type instantiation is excessively deep and possibly infinite*.
+There is an implementation of factorial in [Fact.ts](./src/Fact.ts), but unfortunately the compiler has hardcoded type-instantiation depth limits and fails with *Type instantiation is excessively deep and possibly infinite*.
 
 # License
 
