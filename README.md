@@ -15,12 +15,12 @@ When parsing the string `(λx.x) y`,
 - the evaluator derives `Var<"y">`
 - the stringifier produces `y`:
 ```ts
-import { Parse, } from "./Parser"
+import { Parse } from "./Parser"
 import { Eval, Stringify } from "./Semantics"
 type raw = `(λx.x) y`
-type parsed = Parse<raw> 
-type evaluated = Eval<parsed>
-type stringified = Stringify<evaluated>
+type parsed = Parse<raw> // App<Func<Var<"x">, "x">, Var<"y">>
+type evaluated = Eval<parsed> // Var<"y">
+type stringified = Stringify<evaluated> // y
 ```
 ### Arithmetics
 The following example shows simple arithmetic operations with [Church Encoding](https://en.wikipedia.org/wiki/Church_encoding):
@@ -30,10 +30,10 @@ type ZERO = "(λf.(λx.x))"
 type SUCC = "(λa.(λf.(λx.(a f) (f x))))"
 type ADD = `(λa.(λb.(b ${SUCC} a)))`
 
-type zero = Parse<ZERO>
-type succ = Parse<SUCC>
-type one = Parse<`${SUCC} ${ZERO}`>
-type two = Parse<`${SUCC} (${SUCC} ${ZERO})`>
+type zero = Parse<ZERO> // Func<Func<Var<"x">, "x">, "f">
+type succ = Parse<SUCC> // Func<Func<Func<App<App<Var<"a">, Var<"f">>, App<Var<"f">, Var<"x">>>, "x">, "f">, "a">
+type one = Parse<`${SUCC} ${ZERO}`> // App<Func<Func<Func<App<App<Var<"a">, Var<"f">>, App<Var<"f">, Var<"x">>>, "x">, "f">, "a">, Func<Func<Var<"x">, "x">, "f">> 
+type two = Parse<`${SUCC} (${SUCC} ${ZERO})`> // App<Func<Func<Func<App<App<Var<"a">, Var<"f">>, App<Var<"f">, Var<"x">>>, "x">, "f">, "a">, App<Func<Func<Func<App<App<Var<"a">, Var<"f">>, App<Var<"f">, Var<"x">>>, "x">, "f">, "a">, Func<Func<Var<"x">, "x">, "f">>>
 
 type rawOne = Stringify<one> // ((λa.(λf.(λx.((a f) (f x))))) (λf.(λx.x)))
 
@@ -49,11 +49,11 @@ type evalTwo = Stringify<Eval<two>>  // (λf.(λx.(f (f x))))
 // 3 + 2 = 5
 type parsed = Parse<`${ADD} (${SUCC} (${SUCC} (${SUCC} ${ZERO}))) (${SUCC} (${SUCC} ${ZERO}))`>
 type rawParsed = Stringify<parsed> // (((λa.(λb.((b (λa.(λf.(λx.((a f) (f x)))))) a))) 
-                                   // ((λa.(λf.(λx.((a f) (f x))))) 
+                                   //   ((λa.(λf.(λx.((a f) (f x))))) 
                                    //   ((λa.(λf.(λx.((a f) (f x)))))
-                                   //     ((λa.(λf.(λx.((a f) (f x))))) 
-                                   //       (λf.(λx.x)))))) 
-                                   // ((λa.(λf.(λx.((a f) (f x))))) 
+                                   //   ((λa.(λf.(λx.((a f) (f x))))) 
+                                   //     (λf.(λx.x)))))) 
+                                   //   ((λa.(λf.(λx.((a f) (f x))))) 
                                    //   ((λa.(λf.(λx.((a f) (f x))))) 
                                    //     (λf.(λx.x)))))
 
